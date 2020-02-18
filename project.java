@@ -46,7 +46,10 @@ public class project{
 	//java Project GetItems %    <- will return all items
 	//java Project GetItems LSoda    <- will return one item
 	private GetItems(int itemCode) {
-		
+		if(itemCode == "%") {
+			itemCode = "*";
+		}
+		ResultSet rs = stmt.executeQuery("")
 	}
 	
 	private GetShipments(int itemCode) {
