@@ -11,3 +11,11 @@ PurchaseDate datetime,
 FOREIGN KEY (ItemID)
 	REFERENCES Item(ID),
 primary key (ID));
+
+Create table Shipment(ID int auto_increment,
+ItemID int,
+Quantity int NOT NULL,
+ShipmentDate date NOT NULL UNIQUE,
+FOREIGN KEY (ItemID)
+	REFERENCES Item(ID),
+primary key (ID));
