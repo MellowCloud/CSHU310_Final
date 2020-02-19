@@ -104,8 +104,7 @@ class dao {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		try{
-		stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',"
-				+ "(SELECT ID from Item" + "WHERE itemCode = '" + itemCode + "'));");
+		stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',(SELECT ID from Item WHERE itemCode = '" + itemCode + "'));");
 		}catch(Exception e){
 			System.out.println("Unexpected Error");
 			e.printStackTrace();
