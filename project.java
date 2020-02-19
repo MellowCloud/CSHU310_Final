@@ -34,18 +34,22 @@ public class project {
 				printUsage();
 			}
 		}
-		// TEST
-//		 Connection con = getConn();
-//		 Statement stmt = con.createStatement();
-//		 ResultSet result_set = stmt.executeQuery("Select * from Item;");
-//		 System.out.println(result_set.getRow());
-//		
-//		 closeConn(con);
-		// END TEST
 	}
 
 	public static void printUsage() {
-		System.out.println("Usage");
+		System.out.println("Please use a one of the following (without brackets):\n"+
+		"java project /?\n"+
+		"java project CreateItem <itemCode> <itemDescription> <price>\n"+
+		"java project CreatePurchase <itemCode> <PurchaseQuantity> \n"+
+		"java project CreateShipment <itemCode> <ShipmentQuantity>  <shipmentDate>\n"+
+		"java project GetItems <itemCode>\n"+
+		"java project GetShipments <itemCode>\n"+
+		"java project GetPurchases <itemCode>\n"+
+		"java project ItemsAvailable <itemCode>\n"+
+		"java project UpdateItem <itemCode> <price>\n"+
+		"java project DeleteItem <itemCode>\n"+
+		"java project DeleteShipment <itemCode>\n"+
+		"java project DeletePurchase <itemCode>");
 	}
 }
 
@@ -118,7 +122,7 @@ class dao {
 	}
 
 	// DONE
-	public ResultSet GetItems(String itemCode) throws SQLException {
+	public void GetItems(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet rs;
@@ -130,7 +134,7 @@ class dao {
 			rs = stmt.executeQuery(query);
 		}
 		PrintItemResults("%", rs);
-		return rs;
+		closeConn(con);
 	}
 
 	// DONE
@@ -147,6 +151,7 @@ class dao {
 			rs = stmt.executeQuery(query);
 		}
 		PrintShipmentResults("%", rs);
+		closeConn(con);
 	}
 
 	// DONE
@@ -163,6 +168,7 @@ class dao {
 			rs = stmt.executeQuery(query);
 		}
 		PrintPurchaseResults("%", rs);
+		closeConn(con);
 	}
 
 	// MOST COMPLEX METHOD
@@ -194,10 +200,14 @@ class dao {
 				System.out.println("ItemCode: " + rs.getString("ItemCode") + "\nItemDescription: " + rs.getString("ItemDescription") + "\nNumber Items Available(Shipment-Purchase): " + numberAvailable);
 			}
 		}
+		closeConn(con);
 	}
 
 	public void UpdateItem(String itemCode, double price) throws SQLException {
-
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		stmt.executeUpdate("UPDATE Item SET Price = '"+price+"' WHERE ItemCode = '"+itemCode+"';");
+		closeConn(con);
 	}
 
 	// DONE
@@ -209,6 +219,7 @@ class dao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		closeConn(con);
 	}
 
 	// DONE
@@ -224,6 +235,7 @@ class dao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		closeConn(con);
 	}
 
 	// DONE
@@ -240,6 +252,7 @@ class dao {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		closeConn(con);
 	}
 
 	public void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
@@ -264,10 +277,10 @@ class dao {
 			int quantity = rs.getInt("Quantity");
 			Date date = rs.getDate("ShipmentDate");
 
-			System.out.println("ID " + id);
-			System.out.println("ItemID " + itemID);
-			System.out.println("Quantity " + quantity);
-			System.out.println("ShipmentDate " + date);
+			System.out.print("ID " + id);
+			System.out.print(", ItemID " + itemID);
+			System.out.print(", Quantity " + quantity);
+			System.out.println(", ShipmentDate " + date);
 
 		}
 	}
@@ -279,10 +292,10 @@ class dao {
 			String description = rs.getString("ItemDescription");
 			Double price = rs.getDouble("Price");
 
-			System.out.println("ID " + id);
-			System.out.println("ItemCode " + itemCode);
-			System.out.println("ItemDescription " + description);
-			System.out.println("Price " + price);
+			System.out.print("ID " + id);
+			System.out.print(", ItemCode " + itemCode);
+			System.out.print(", ItemDescription " + description);
+			System.out.println(", Price " + price);
 
 		}
 	}

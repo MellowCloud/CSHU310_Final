@@ -40,3 +40,6 @@ ALTER TABLE Purchase MODIFY PurchaseDate datetime DEFAULT CURRENT_TIMESTAMP;
 
 INSERT INTO Shipment(ItemID, Quantity, ShipmentDate)
 VALUES ((SELECT ID from Item WHERE itemCode = 'Example'), '4', '2000-01-02');
+
+UPDATE Item SET Price = '5.00' WHERE ItemCode = '1';
+
