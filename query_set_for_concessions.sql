@@ -22,6 +22,7 @@ primary key (ID));
 
 select * from Item;
 select * from Purchase;
+select * from Shipment;
 
 INSERT INTO Item(itemCode, itemDescription, price)
 VALUES('DELETETEST', 'This is an example', 1.00);
@@ -31,6 +32,11 @@ use concessions;
 INSERT INTO Purchase(Quantity, ItemID)
 VALUES('3',
 (SELECT ID from Item
-WHERE itemCode = 'Example'));
+WHERE itemCode = 'DELETETEST'));
 
 DELETE FROM Item WHERE itemCode = 'DELETETEST';
+
+ALTER TABLE Purchase MODIFY PurchaseDate datetime DEFAULT CURRENT_TIMESTAMP;
+
+INSERT INTO Shipment(ItemID, Quantity, ShipmentDate)
+VALUES ((SELECT ID from Item WHERE itemCode = 'Example'), '4', '2000-01-02');
