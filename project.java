@@ -93,7 +93,6 @@ class dao {
 			"VALUES('"+itemCode+"', '"+itemDescription+"', "+price+");");
 			System.out.println("Success!");
 		}catch(Exception e) {
-			System.out.println("Unexpected Error");
 			e.printStackTrace();
 		}
 		closeConn(con);
@@ -104,16 +103,22 @@ class dao {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		try{
-		stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',(SELECT ID from Item WHERE itemCode = '" + itemCode + "'));");
+			stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',(SELECT ID from Item WHERE itemCode = '" + itemCode + "'));");
 		}catch(Exception e){
-			System.out.println("Unexpected Error");
 			e.printStackTrace();
 		}
+		closeConn(con);
 	}
 
-	public void CreateShipment(String itemCode, String ShipmentQuantity, String shipmentDate)
-			throws SQLException {
-
+	public void CreateShipment(String itemCode, String shipmentQuantity, String shipmentDate) throws SQLException {
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		try{
+			stmt.executeUpdate("INSERT INTO Shipment(ItemID, Quantity, ShipmentDate) VALUES ((SELECT ID from Item WHERE itemCode = '"+itemCode+"'), '"+shipmentQuantity+"', '"+shipmentDate+"');");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		closeConn(con);
 	}
 
 	// DONE
