@@ -7,17 +7,19 @@ public class project {
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		
-		// if(args[0].equals("/?")){
-		// 	printUsage();
-		// } else if(args <) {
-
-		// } else {
-		// 	printUsage();
-		// }
+		if (args[0].equals("CreateItem")) {
+		    
+		    } else if (args[0].equals("CreatePurchase")) {
+		      
+		    } else if (args[0].equals("CreateShipment")) {
+		      
+		    } else if (args[0].equals("CreateItems")) {
+		      
+		    }
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet result_set = stmt.executeQuery("Select * from Item;");
-		System.out.println(result_set);
+		System.out.println(result_set.getRow());
 		
 	}
 	
