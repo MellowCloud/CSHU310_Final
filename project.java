@@ -96,16 +96,20 @@ class dao {
 			System.out.println("Unexpected Error");
 			e.printStackTrace();
 		}
+		closeConn(con);
 
 	}
 
 	public void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
-		ResultSet rs;
-		rs = stmt.executeQuery("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',"
+		try{
+		stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',"
 				+ "(SELECT ID from Item" + "WHERE itemCode = '" + itemCode + "'));");
-		// TODO PRINT
+		}catch(Exception e){
+			System.out.println("Unexpected Error");
+			e.printStackTrace();
+		}
 	}
 
 	public void CreateShipment(String itemCode, String ShipmentQuantity, String shipmentDate)
