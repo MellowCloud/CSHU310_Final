@@ -19,3 +19,18 @@ ShipmentDate date NOT NULL UNIQUE,
 FOREIGN KEY (ItemID)
 	REFERENCES Item(ID),
 primary key (ID));
+
+select * from Item;
+select * from Purchase;
+
+INSERT INTO Item(itemCode, itemDescription, price)
+VALUES('DELETETEST', 'This is an example', 1.00);
+
+use concessions;
+
+INSERT INTO Purchase(Quantity, ItemID)
+VALUES('3',
+(SELECT ID from Item
+WHERE itemCode = 'Example'));
+
+DELETE FROM Item WHERE itemCode = 'DELETETEST';

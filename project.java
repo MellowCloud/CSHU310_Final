@@ -36,12 +36,12 @@ public class project {
 			}
 		}
 		//TEST
-		// Connection con = getConn();
-		// Statement stmt = con.createStatement();
-		// ResultSet result_set = stmt.executeQuery("Select * from Item;");
-		// System.out.println(result_set.getRow());
+		 Connection con = getConn();
+		 Statement stmt = con.createStatement();
+		 ResultSet result_set = stmt.executeQuery("Select * from Item;");
+		 System.out.println(result_set.getRow());
 		
-		// closeConn(con);
+		 closeConn(con);
 		//END TEST
 	}
 	
@@ -84,11 +84,24 @@ public class project {
 	
 	//EXAMPLE java Project CreateItem LSoda "Large Soda" 5.50
 	private static void CreateItem(String itemCode, String itemDescription, double price) throws SQLException {
-		
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		rs = stmt.executeQuery("INSERT INTO Item(itemCode, itemDescription, price)" + 
+				"VALUES('"+itemCode+"', '"+itemDescription+"', '"+price+"');");
+		//TODO
+		//PRINT
 	}
 	
 	private static void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
-		
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		rs =stmt.executeQuery("INSERT INTO Purchase(Quantity, ItemID)"+
+				"VALUES('"+purchaseQuantity+"',"+
+						"(SELECT ID from Item"+
+						"WHERE itemCode = '"+itemCode+"'));");
+		//TODO PRINT
 	}
 	
 	private static void CreateShipment(String itemCode, String ShipmentQuantity, String shipmentDate) throws SQLException {
@@ -131,7 +144,7 @@ public class project {
 		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		}else {
-			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"\""+Integer.parseInt(itemCode)+"\";";
+			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"\""+itemCode+"\";";
 			System.out.println("Executing query: " + query);
 			rs = stmt.executeQuery(query);
 		}
@@ -148,6 +161,11 @@ public class project {
 	}
 	
 	private static void DeleteItem(String itemCode) throws SQLException {
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		rs = stmt.executeQuery("DELETE FROM Item WHERE itemCode = '"+itemCode+"';");
+		//TODO print
 		
 	}
 	
