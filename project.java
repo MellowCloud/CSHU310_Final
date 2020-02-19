@@ -36,12 +36,12 @@ public class project {
 			}
 		}
 		//TEST
-		 Connection con = getConn();
-		 Statement stmt = con.createStatement();
-		 ResultSet result_set = stmt.executeQuery("Select * from Item;");
-		 System.out.println(result_set.getRow());
+		// Connection con = getConn();
+		// Statement stmt = con.createStatement();
+		// ResultSet result_set = stmt.executeQuery("Select * from Item;");
+		// System.out.println(result_set.getRow());
 		
-		 closeConn(con);
+		// closeConn(con);
 		//END TEST
 	}
 	
@@ -52,7 +52,7 @@ public class project {
 		String db_name = "concessions";
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -86,22 +86,19 @@ public class project {
 	private static void CreateItem(String itemCode, String itemDescription, double price) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
-		ResultSet rs;
-		rs = stmt.executeQuery("INSERT INTO Item(itemCode, itemDescription, price)" + 
-				"VALUES('"+itemCode+"', '"+itemDescription+"', '"+price+"');");
-		//TODO
-		//PRINT
+		try {
+			stmt.executeUpdate("INSERT INTO Item(itemCode, itemDescription, price)"+
+			"VALUES('"+itemCode+"', '"+itemDescription+"', "+price+");");
+			System.out.println("Success!");
+		}catch(Exception e) {
+			System.out.println("Unexpected Error");
+			e.printStackTrace();
+		}
+
 	}
 	
 	private static void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
-		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		rs =stmt.executeQuery("INSERT INTO Purchase(Quantity, ItemID)"+
-				"VALUES('"+purchaseQuantity+"',"+
-						"(SELECT ID from Item"+
-						"WHERE itemCode = '"+itemCode+"'));");
-		//TODO PRINT
+		
 	}
 	
 	private static void CreateShipment(String itemCode, String ShipmentQuantity, String shipmentDate) throws SQLException {
@@ -120,7 +117,12 @@ public class project {
 		}else {
 			rs = stmt.executeQuery("SELECT * FROM Item WHERE ItemCode = "+"'"+itemCode+"';");
 		}
-		System.out.println(rs.getRow());
+		while(rs.next()){
+			System.out.print("ID: "+rs.getInt("ID"));
+			System.out.print(", Item Code: "+rs.getString("ItemCode"));
+			System.out.print(", Item Description: "+rs.getString("ItemDescription"));
+			System.out.print(", Price: "+rs.getString("Price")+"\n");
+		}
 	}
 	
 	private static void GetShipments(String itemCode) throws SQLException {
@@ -134,7 +136,13 @@ public class project {
 					+ "WHERE "+itemCode
 					+ "=(SELECT itemCode FROM Item i WHERE i.ID = s.ItemID);");
 		}
-		System.out.println(rs.getRow());
+		while(rs.next()) {
+			System.out.print("ID: "+rs.getInt("ID"));
+			System.out.print(", ItemID: "+rs.getString("ItemID"));
+			System.out.print(", Quantity: "+rs.getString("ItemDescription"));
+			System.out.print(", Shipment Date: "+rs.getString("ShipmentDate")+"\n");
+		}
+		
 	}
 	
 	private static void GetPurchases(String itemCode) throws SQLException {
@@ -144,7 +152,7 @@ public class project {
 		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		}else {
-			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"\""+itemCode+"\";";
+			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = '"+itemCode+"';";
 			System.out.println("Executing query: " + query);
 			rs = stmt.executeQuery(query);
 		}
@@ -161,11 +169,6 @@ public class project {
 	}
 	
 	private static void DeleteItem(String itemCode) throws SQLException {
-		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		rs = stmt.executeQuery("DELETE FROM Item WHERE itemCode = '"+itemCode+"';");
-		//TODO print
 		
 	}
 	
@@ -180,14 +183,14 @@ public class project {
 	private static void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
 		while(rs.next()){
 			int id = rs.getInt("ID");
-			int itemID = rs.getInt("ItemID");
+			String itemID = rs.getString("ItemID");
 			int quantity = rs.getInt("Quantity");
 			Date date = rs.getDate("PurchaseDate");
 			
-			System.out.println("ID " + id);
-			System.out.println("ItemID " + itemID);
-			System.out.println("Quantity " + quantity);
-			System.out.println("PurchaseDate " + date);
+			System.out.print("ID " + id);
+			System.out.print(", ItemID " + itemID);
+			System.out.print(", Quantity " + quantity);
+			System.out.print(", PurchaseDate " + date+"\n");
 
 		}
 	}
