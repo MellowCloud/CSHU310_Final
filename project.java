@@ -3,7 +3,6 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
-
 public class project {
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
@@ -108,9 +107,7 @@ public class project {
 		
 	}
 	
-	//EXAMPLE
-	//java Project GetItems %    <- will return all items
-	//java Project GetItems LSoda    <- will return one item
+	// DONE
 	private static void GetItems(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
@@ -118,11 +115,14 @@ public class project {
 		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Item;");
 		}else {
-			rs = stmt.executeQuery("SELECT * FROM Item WHERE ItemCode = "+"'"+itemCode+"';");
+			String query = "SELECT * FROM Item WHERE ItemCode = "+"'"+itemCode+"';";
+			System.out.println("Executing query: " + query);
+			rs = stmt.executeQuery(query);
 		}
-		System.out.println(rs.getRow());
+		PrintItemResults("%", rs);
 	}
 	
+	// DONE
 	private static void GetShipments(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
@@ -130,13 +130,14 @@ public class project {
 		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Shipment;");
 		}else {
-			rs = stmt.executeQuery("SELECT * FROM Shipment s "
-					+ "WHERE "+itemCode
-					+ "=(SELECT itemCode FROM Item i WHERE i.ID = s.ItemID);");
+			String query = "SELECT s.* FROM Shipment s JOIN Item i on s.ItemID = i.ID WHERE i.ItemCode = "+"'"+itemCode+"';";
+			System.out.println("Executing query: " + query);
+			rs = stmt.executeQuery(query);
 		}
-		System.out.println(rs.getRow());
+		PrintShipmentResults("%", rs);
 	}
 	
+	// DONE
 	private static void GetPurchases(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
@@ -144,7 +145,7 @@ public class project {
 		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		}else {
-			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"\""+itemCode+"\";";
+			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"'"+itemCode+"';";
 			System.out.println("Executing query: " + query);
 			rs = stmt.executeQuery(query);
 		}
@@ -188,6 +189,36 @@ public class project {
 			System.out.println("ItemID " + itemID);
 			System.out.println("Quantity " + quantity);
 			System.out.println("PurchaseDate " + date);
+
+		}
+	}
+	
+	private static void PrintShipmentResults(String columns, ResultSet rs) throws SQLException {
+		while(rs.next()){
+			int id = rs.getInt("ID");
+			int itemID = rs.getInt("ItemID");
+			int quantity = rs.getInt("Quantity");
+			Date date = rs.getDate("ShipmentDate");
+			
+			System.out.println("ID " + id);
+			System.out.println("ItemID " + itemID);
+			System.out.println("Quantity " + quantity);
+			System.out.println("ShipmentDate " + date);
+
+		}
+	}
+	
+	private static void PrintItemResults(String columns, ResultSet rs) throws SQLException {
+		while(rs.next()){
+			int id = rs.getInt("ID");
+			String itemCode = rs.getString("ItemCode");
+			String description = rs.getString("ItemDescription");
+			Double price = rs.getDouble("Price");
+			
+			System.out.println("ID " + id);
+			System.out.println("ItemCode " + itemCode);
+			System.out.println("ItemDescription " + description);
+			System.out.println("Price " + price);
 
 		}
 	}
