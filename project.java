@@ -1,5 +1,6 @@
 import java.io.*;
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 
@@ -35,12 +36,12 @@ public class project {
 			}
 		}
 		//TEST
-		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet result_set = stmt.executeQuery("Select * from Item;");
-		System.out.println(result_set.getRow());
+		// Connection con = getConn();
+		// Statement stmt = con.createStatement();
+		// ResultSet result_set = stmt.executeQuery("Select * from Item;");
+		// System.out.println(result_set.getRow());
 		
-		closeConn(con);
+		// closeConn(con);
 		//END TEST
 	}
 	
@@ -101,10 +102,10 @@ public class project {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet rs;
-		if(itemCode == "%") {
+		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Item;");
 		}else {
-			rs = stmt.executeQuery("SELECT * FROM Item WHERE itemCode = "+itemCode+";");
+			rs = stmt.executeQuery("SELECT * FROM Item WHERE ItemCode = "+"'"+itemCode+"';");
 		}
 		System.out.println(rs.getRow());
 	}
@@ -113,7 +114,7 @@ public class project {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet rs;
-		if(itemCode == "%") {
+		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Shipment;");
 		}else {
 			rs = stmt.executeQuery("SELECT * FROM Shipment s "
@@ -127,14 +128,14 @@ public class project {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet rs;
-		if(itemCode =="%") {
+		if(itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		}else {
-			rs = stmt.executeQuery("SELECT * FROM Purchase p "
-					+ "WHERE "+itemCode
-					+ "=(SELECT itemCode FROM Item i WHERE i.ID = p.ItemID);");		
+			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = "+"\""+Integer.parseInt(itemCode)+"\";";
+			System.out.println("Executing query: " + query);
+			rs = stmt.executeQuery(query);
 		}
-		System.out.println(rs.getRow());
+		PrintPurchaseResults("%", rs);
 	}
 	
 	//MOST COMPLEX METHOD
@@ -157,23 +158,20 @@ public class project {
 	private static void DeletePurchase(String itemCode) throws SQLException {
 		
 	}
+	
+	private static void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
+		while(rs.next()){
+			int id = rs.getInt("ID");
+			int itemID = rs.getInt("ItemID");
+			int quantity = rs.getInt("Quantity");
+			Date date = rs.getDate("PurchaseDate");
+			
+			System.out.println("ID " + id);
+			System.out.println("ItemID " + itemID);
+			System.out.println("Quantity " + quantity);
+			System.out.println("PurchaseDate " + date);
 
-//	private static Session doSshTunnel( String strSshUser, String strSshPassword, String strSshHost, int nSshPort, String strRemoteHost, int nLocalPort, int nRemotePort ) throws JSchException
-//	{
-//		/*This is one of the available choices to connect to mysql
-//		 * If you think you know another way, you can go ahead*/
-//		
-//		final JSch jsch = new JSch();
-//		java.util.Properties configuration = new java.util.Properties();
-//		configuration.put("StrictHostKeyChecking", "no");
-//
-//		Session session = jsch.getSession( strSshUser, strSshHost, 22 );
-//		session.setPassword( strSshPassword );
-//
-//		session.setConfig(configuration);
-//		session.connect();
-//		session.setPortForwardingL(nLocalPort, strRemoteHost, nRemotePort);
-//		return session;
-//	}
+		}
+	}
 }
 
