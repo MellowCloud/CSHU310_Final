@@ -57,7 +57,7 @@ class dao {
 		String db_name = "concessions";
 
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -81,17 +81,18 @@ class dao {
 		}
 	}
 
-	// DONE
+	// ACESSING QUERIES:
+	// ResultSet rs = stmt.executeQuery("[QUERY]");
+
+	// EXAMPLE java Project CreateItem LSoda "Large Soda" 5.50
 	public void CreateItem(String itemCode, String itemDescription, double price) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
-		try {
-			stmt.executeUpdate("INSERT INTO Item(ItemCode, ItemDescription, Price)"+
-			"VALUES('" + itemCode + "', '" + itemDescription + "', " + price + ");");
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-
+		ResultSet rs;
+		rs = stmt.executeQuery("INSERT INTO Item(itemCode, itemDescription, price)" + "VALUES('" + itemCode + "', '"
+				+ itemDescription + "', '" + price + "');");
+		// TODO
+		// PRINT
 	}
 
 	public void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
@@ -109,7 +110,7 @@ class dao {
 	}
 
 	// DONE
-	public ResultSet GetItems(String itemCode) throws SQLException {
+	public void GetItems(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet rs;
@@ -121,7 +122,6 @@ class dao {
 			rs = stmt.executeQuery(query);
 		}
 		PrintItemResults("%", rs);
-		return rs;
 	}
 
 	// DONE
@@ -158,33 +158,7 @@ class dao {
 
 	// MOST COMPLEX METHOD
 	public void ItemsAvailable(String itemCode) throws SQLException {
-		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		if (itemCode.equals("%")) {
-			String itemSummary = "SELECT i.*, sum(p.Quantity) as PurchaseSum, sum(s.Quantity) as ShipmentSum FROM Item i LEFT JOIN Purchase p ON i.ID = p.ItemID LEFT JOIN Shipment s ON i.ID = s.ItemID GROUP BY i.ID";
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(itemSummary);
-			while(rs.next()) {
-				int purchaseSum = rs.getInt("PurchaseSum");
-				int shipmentSum = rs.getInt("ShipmentSum");
-				int numberAvailable = shipmentSum-purchaseSum;
-				System.out.println("ItemCode: " + rs.getString("ItemCode") + "\nItemDescription: " + rs.getString("ItemDescription") + "\nNumber Items Available(Shipment-Purchase): " + numberAvailable);
-			}
-		} else {
-			String itemSummary = "SELECT i.*, sum(p.Quantity) as PurchaseSum, sum(s.Quantity) as ShipmentSum FROM Item i LEFT JOIN Purchase p ON i.ID = p.ItemID LEFT JOIN Shipment s ON i.ID = s.ItemID GROUP BY i.ID HAVING i.ItemCode = " + "'" + itemCode + "'" + ";";
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(itemSummary);
-			if(rs.getFetchSize() == 0) {
-				System.out.println("That item does not exist.");
-			}
-			while(rs.next()) {
-				int purchaseSum = rs.getInt("PurchaseSum");
-				int shipmentSum = rs.getInt("ShipmentSum");
-				int numberAvailable = shipmentSum-purchaseSum;
-				System.out.println("ItemCode: " + rs.getString("ItemCode") + "\nItemDescription: " + rs.getString("ItemDescription") + "\nNumber Items Available(Shipment-Purchase): " + numberAvailable);
-			}
-		}
+
 	}
 
 	public void UpdateItem(String itemCode, double price) throws SQLException {
@@ -196,7 +170,7 @@ class dao {
 		Connection con = getConn();
 		try {
 			Statement stmt = con.createStatement();
-			int r = stmt.executeUpdate("DELETE FROM Item WHERE ItemCode = " + "'" + itemCode + "';");
+			int r = stmt.executeUpdate("DELETE FROM Item WHERE itemCode = " + "'" + itemCode + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -207,7 +181,7 @@ class dao {
 		Connection con = getConn();
 		try {
 			String query = "DELETE FROM Shipment s WHERE s.ItemID = "
-					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode + "'" + ") "
+					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode +"'" + ") "
 						+ "ORDER BY ShipmentDate DESC LIMIT 1";
 			Statement stmt = con.createStatement();
 			int r = stmt.executeUpdate(query);
@@ -222,7 +196,7 @@ class dao {
 		Connection con = getConn();
 		try {
 			String query = "DELETE FROM Purchase p WHERE p.ItemID = "
-					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode + "'" + ") "
+					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode +"'" + ") "
 						+ "ORDER BY PurchaseDate DESC LIMIT 1";
 			
 			Statement stmt = con.createStatement();
@@ -236,14 +210,14 @@ class dao {
 	public void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
 		while (rs.next()) {
 			int id = rs.getInt("ID");
-			String itemID = rs.getString("ItemID");
+			int itemID = rs.getInt("ItemID");
 			int quantity = rs.getInt("Quantity");
 			Date date = rs.getDate("PurchaseDate");
-			
-			System.out.print("ID " + id);
-			System.out.print(", ItemID " + itemID);
-			System.out.print(", Quantity " + quantity);
-			System.out.print(", PurchaseDate " + date+"\n");
+
+			System.out.println("ID " + id);
+			System.out.println("ItemID " + itemID);
+			System.out.println("Quantity " + quantity);
+			System.out.println("PurchaseDate " + date);
 
 		}
 	}
