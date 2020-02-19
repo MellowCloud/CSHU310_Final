@@ -5,9 +5,6 @@ import java.util.*;
 
 public class project {
 	
-	private static Statement stmt = null;
-	private static Connection con = null;
-	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		
 		// if(args[0].equals("/?")){
@@ -17,9 +14,15 @@ public class project {
 		// } else {
 		// 	printUsage();
 		// }
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet result_set = stmt.executeQuery("Select * from Item;");
+		System.out.println(result_set);
+		
 	}
 	
-	private Connection getConn() {
+	private static Connection getConn() {
+		Connection con = null;
 		String db_host = "127.0.0.1";
 		String db_port = "52956";
 		String db_name = "concessions";
