@@ -7,20 +7,41 @@ public class project {
 	
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
 		
-		if (args[0].equals("CreateItem")) {
-		    
-		    } else if (args[0].equals("CreatePurchase")) {
-		      
-		    } else if (args[0].equals("CreateShipment")) {
-		      
-		    } else if (args[0].equals("CreateItems")) {
-		      
-		    }
+		if (args.length != 0) {
+			if (args[0].equals("CreateItem") && args.length==4) {
+				CreateItem(args[1],args[2], Double.parseDouble(args[3]));
+			} else if (args[0].equals("CreatePurchase")&&args.length==3) {
+				CreatePurchase(args[1],args[2]);
+			} else if (args[0].equals("CreateShipment")&&args.length==4) {
+				CreateShipment(args[1],args[2], args[3]);
+			}  else if (args[0].equals("GetItems") && args.length==2) {
+				GetItems(args[1]);
+			} else if (args[0].equals("GetShipments") && args.length==2) {
+				GetShipments(args[1]);
+			} else if (args[0].equals("GetPurchases") && args.length==2) {
+				GetPurchases(args[1]);
+			} else if (args[0].equals("ItemsAvailable")&&args.length==2) {
+				ItemsAvailable(args[1]);
+			} else if (args[0].equals("UpdateItem")&&args.length==3) {
+				UpdateItem(args[1],Double.parseDouble(args[2]));
+			} else if (args[0].equals("DeleteItem")&&args.length==2) {
+				DeleteItem(args[1]);
+			} else if (args[0].equals("DeleteShipment")&&args.length==2) {
+				DeleteShipment(args[1]);
+			} else if (args[0].equals("DeletePurchase")&&args.length==2) {
+				DeletePurchase(args[1]);
+			} else {
+				printUsage();
+			}
+		}
+		//TEST
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
 		ResultSet result_set = stmt.executeQuery("Select * from Item;");
 		System.out.println(result_set.getRow());
 		
+		closeConn(con);
+		//END TEST
 	}
 	
 	private static Connection getConn() {
@@ -45,7 +66,7 @@ public class project {
 		return con;
 	}
 	
-	private void closeConn(Connection con) {
+	private static void closeConn(Connection con) {
 		try {
 			con.close();
 		} catch (SQLException e) {
@@ -53,7 +74,7 @@ public class project {
 		}
 	}
 	
-	private void printUsage() {
+	private static void printUsage() {
 		System.out.println("Usage");
 	}
 	//ACESSING QUERIES:
@@ -61,57 +82,82 @@ public class project {
 	
 	
 	//EXAMPLE java Project CreateItem LSoda "Large Soda" 5.50
-//	private CreateItem(int itemCode, String itemDescription, double price) {
-//		
-//	}
-//	
-//	private CreatePurchase(int itemCode, int purchaseQuantity) {
-//		
-//	}
-//	
-//	private CreateShipment(int itemCode, int ShipmentQuantity, String shipmentDate) {
-//		
-//	}
+	private static void CreateItem(String itemCode, String itemDescription, double price) throws SQLException {
+		
+	}
+	
+	private static void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
+		
+	}
+	
+	private static void CreateShipment(String itemCode, String ShipmentQuantity, String shipmentDate) throws SQLException {
+		
+	}
 	
 	//EXAMPLE
 	//java Project GetItems %    <- will return all items
 	//java Project GetItems LSoda    <- will return one item
-//	private GetItems(int itemCode) {
-//		if(itemCode == "%") {
-//			itemCode = "*";
-//		}
-//		ResultSet rs = stmt.executeQuery("")
-//	}
-//	
-//	private GetShipments(int itemCode) {
-//		
-//	}
-//	
-//	private GetPurchases(int itemCode) {
-//		
-//	}
-//	
-//	//MOST COMPLEX METHOD
-//	private ItemsAvailable(int itemCode) {
-//		
-//	}
-//	
-//	private UpdateItem(int itemCode, double price) {
-//		
-//	}
-//	
-//	private DeleteItem(int itemCode) {
-//		
-//	}
-//	
-//	private DeleteShipment(int itemCode) {
-//		
-//	}
-//	
-//	private DeletePurchase(int itemCode) {
-//		
-//	}
+	private static void GetItems(String itemCode) throws SQLException {
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		if(itemCode == "%") {
+			rs = stmt.executeQuery("SELECT * FROM Item;");
+		}else {
+			rs = stmt.executeQuery("SELECT * FROM Item WHERE itemCode = "+itemCode+";");
+		}
+		System.out.println(rs.getRow());
+	}
 	
+	private static void GetShipments(String itemCode) throws SQLException {
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		if(itemCode == "%") {
+			rs = stmt.executeQuery("SELECT * FROM Shipment;");
+		}else {
+			rs = stmt.executeQuery("SELECT * FROM Shipment s "
+					+ "WHERE "+itemCode
+					+ "=(SELECT itemCode FROM Item i WHERE i.ID = s.ItemID);");
+		}
+		System.out.println(rs.getRow());
+	}
+	
+	private static void GetPurchases(String itemCode) throws SQLException {
+		Connection con = getConn();
+		Statement stmt = con.createStatement();
+		ResultSet rs;
+		if(itemCode =="%") {
+			rs = stmt.executeQuery("SELECT * FROM Purchase;");
+		}else {
+			rs = stmt.executeQuery("SELECT * FROM Purchase p "
+					+ "WHERE "+itemCode
+					+ "=(SELECT itemCode FROM Item i WHERE i.ID = p.ItemID);");		
+		}
+		System.out.println(rs.getRow());
+	}
+	
+	//MOST COMPLEX METHOD
+	private static void ItemsAvailable(String itemCode) throws SQLException {
+		
+	}
+	
+	private static void UpdateItem(String itemCode, double price) throws SQLException {
+		
+	}
+	
+	private static void DeleteItem(String itemCode) throws SQLException {
+		
+	}
+	
+	private static void DeleteShipment(String itemCode) throws SQLException {
+		
+	}
+	
+	private static void DeletePurchase(String itemCode) throws SQLException {
+		
+	}
+
 //	private static Session doSshTunnel( String strSshUser, String strSshPassword, String strSshHost, int nSshPort, String strRemoteHost, int nLocalPort, int nRemotePort ) throws JSchException
 //	{
 //		/*This is one of the available choices to connect to mysql
