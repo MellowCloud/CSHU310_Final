@@ -165,21 +165,46 @@ class dao {
 
 	}
 
-	public void DeleteItem(String itemCode) throws SQLException {
+	// DONE
+	public void DeleteItem(String itemCode){
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		rs = stmt.executeQuery("DELETE FROM Item WHERE itemCode = '" + itemCode + "';");
-		// TODO print
-
+		try {
+			Statement stmt = con.createStatement();
+			int r = stmt.executeUpdate("DELETE FROM Item WHERE itemCode = " + "'" + itemCode + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public void DeleteShipment(String itemCode) throws SQLException {
-
+	// DONE
+	public void DeleteShipment(String itemCode) {
+		Connection con = getConn();
+		try {
+			String query = "DELETE FROM Shipment s WHERE s.ItemID = "
+					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode +"'" + ") "
+						+ "ORDER BY ShipmentDate DESC LIMIT 1";
+			Statement stmt = con.createStatement();
+			int r = stmt.executeUpdate(query);
+			System.out.println("Executed query: " + query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
+	// DONE
 	public void DeletePurchase(String itemCode) throws SQLException {
-
+		Connection con = getConn();
+		try {
+			String query = "DELETE FROM Purchase p WHERE p.ItemID = "
+					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode +"'" + ") "
+						+ "ORDER BY PurchaseDate DESC LIMIT 1";
+			
+			Statement stmt = con.createStatement();
+			int r = stmt.executeUpdate(query);
+			System.out.println("Executed query: " + query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
