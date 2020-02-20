@@ -229,9 +229,6 @@ class dao {
 			PreparedStatement preparedStatement = con.prepareStatement(itemSummary);
 			preparedStatement.setString(1, itemCode);
 			rs = preparedStatement.executeQuery();
-			if(rs.getFetchSize() == 0) {
-				System.out.println("That item does not exist.");
-			}
 			while(rs.next()) {
 				int purchaseSum = rs.getInt("PurchaseSum");
 				int shipmentSum = rs.getInt("ShipmentSum");
@@ -298,9 +295,7 @@ class dao {
 	}
 
 	public void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
-		if(rs.getFetchSize() == 0) {
-				System.out.println("That item does not exist.");
-			}
+		
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			String itemID = rs.getString("ItemID");
@@ -316,9 +311,7 @@ class dao {
 	}
 
 	public void PrintShipmentResults(String columns, ResultSet rs) throws SQLException {
-		if(rs.getFetchSize() == 0) {
-				System.out.println("That item does not exist.");
-			}
+		
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			int itemID = rs.getInt("ItemID");
@@ -334,9 +327,7 @@ class dao {
 	}
 
 	public void PrintItemResults(String columns, ResultSet rs) throws SQLException {
-		if(rs.getFetchSize() == 0) {
-				System.out.println("That item does not exist.");
-			}
+		
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			String itemCode = rs.getString("ItemCode");
