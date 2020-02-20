@@ -46,7 +46,7 @@ public class project {
 	}
 
 	public static void printUsage() {
-		System.out.println("Please use a one of the following (without brackets):\n"+
+		System.out.println("Usage:\n"+
 		"java project /?\n"+
 		"java project CreateItem <itemCode> <itemDescription> <price>\n"+
 		"java project CreatePurchase <itemCode> <PurchaseQuantity> \n"+
@@ -58,7 +58,7 @@ public class project {
 		"java project UpdateItem <itemCode> <price>\n"+
 		"java project DeleteItem <itemCode>\n"+
 		"java project DeleteShipment <itemCode>\n"+
-		"java project DeletePurchase <itemCode>");
+		"java project DeletePurchase <itemCode>\n");
 	}
 }
 
@@ -95,35 +95,47 @@ class dao {
 	}
 
 	// DONE
-	public void CreateItem(String itemCode, String itemDescription, double price) throws SQLException {
+	public void CreateItem(String itemCode, String itemDescription, double price) {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
 		try {
-			stmt.executeUpdate("INSERT INTO Item(ItemCode, ItemDescription, Price)"+
-			"VALUES('" + itemCode + "', '" + itemDescription + "', " + price + ");");
+			String query = "INSERT INTO Item(ItemCode, ItemDescription, Price) VALUES(?,?,?);";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			preparedStatement.setString(2, itemDescription);
+			preparedStatement.setDouble(3, price);
+			preparedStatement.executeUpdate();
 		}catch(Exception e) {
+			closeConn(con);
 			e.printStackTrace();
 		}
 		closeConn(con);
 
 	}
 	//DONE
-	public void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
+	public void CreatePurchase(String itemCode, String purchaseQuantity) {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
 		try{
-			stmt.executeUpdate("INSERT INTO Purchase(Quantity, ItemID)" + "VALUES('" + purchaseQuantity + "',(SELECT ID from Item WHERE itemCode = '" + itemCode + "'));");
-		}catch(Exception e){
+			String query = "INSERT INTO Purchase(Quantity, ItemID) VALUES(?,(SELECT ifnull((SELECT ID from Item WHERE itemCode = ?), 9813748)));";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, purchaseQuantity);
+			preparedStatement.setString(2, itemCode);
+			preparedStatement.executeUpdate();
+		}catch(SQLException e){
+			closeConn(con);
 			e.printStackTrace();
 		}
 		closeConn(con);
 	}
 	//DONE
-	public void CreateShipment(String itemCode, String shipmentQuantity, String shipmentDate) throws SQLException {
+	public void CreateShipment(String itemCode, String shipmentQuantity, String shipmentDate) {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
 		try{
-			stmt.executeUpdate("INSERT INTO Shipment(ItemID, Quantity, ShipmentDate) VALUES ((SELECT ID from Item WHERE itemCode = '"+itemCode+"'), '"+shipmentQuantity+"', '"+shipmentDate+"');");
+			String query = "INSERT INTO Shipment(ItemID, Quantity, ShipmentDate) VALUES ((SELECT ifnull((SELECT ID from Item WHERE itemCode = 5), 9813748)), ?, ?);";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			preparedStatement.setString(2, shipmentQuantity);
+			preparedStatement.setString(3, shipmentDate);
+			preparedStatement.executeUpdate();
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -138,9 +150,10 @@ class dao {
 		if (itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Item;");
 		} else {
-			String query = "SELECT * FROM Item WHERE ItemCode = " + "'" + itemCode + "';";
-			System.out.println("Executing query: " + query);
-			rs = stmt.executeQuery(query);
+			String query = "SELECT * FROM Item WHERE ItemCode = ?;";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			rs = preparedStatement.executeQuery();
 		}
 		PrintItemResults("%", rs);
 		closeConn(con);
@@ -154,10 +167,10 @@ class dao {
 		if (itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Shipment;");
 		} else {
-			String query = "SELECT s.* FROM Shipment s JOIN Item i on s.ItemID = i.ID WHERE i.ItemCode = " + "'"
-					+ itemCode + "';";
-			System.out.println("Executing query: " + query);
-			rs = stmt.executeQuery(query);
+			String query = "SELECT s.* FROM Shipment s JOIN Item i on s.ItemID = i.ID WHERE i.ItemCode = ?;";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			rs = preparedStatement.executeQuery();
 		}
 		PrintShipmentResults("%", rs);
 		closeConn(con);
@@ -171,10 +184,10 @@ class dao {
 		if (itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		} else {
-			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = " + "'"
-					+ itemCode + "';";
-			System.out.println("Executing query: " + query);
-			rs = stmt.executeQuery(query);
+			String query = "SELECT p.* FROM Purchase p JOIN Item i on p.ItemID = i.ID WHERE i.ItemCode = ?;";
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			rs = preparedStatement.executeQuery();
 		}
 		PrintPurchaseResults("%", rs);
 		closeConn(con);
@@ -196,9 +209,10 @@ class dao {
 				System.out.println("ItemCode: " + rs.getString("ItemCode") + "\nItemDescription: " + rs.getString("ItemDescription") + "\nNumber Items Available(Shipment-Purchase): " + numberAvailable);
 			}
 		} else {
-			String itemSummary = "SELECT i.*, sum(p.Quantity) as PurchaseSum, sum(s.Quantity) as ShipmentSum FROM Item i LEFT JOIN Purchase p ON i.ID = p.ItemID LEFT JOIN Shipment s ON i.ID = s.ItemID GROUP BY i.ID HAVING i.ItemCode = " + "'" + itemCode + "'" + ";";
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(itemSummary);
+			String itemSummary = "SELECT i.*, sum(p.Quantity) as PurchaseSum, sum(s.Quantity) as ShipmentSum FROM Item i LEFT JOIN Purchase p ON i.ID = p.ItemID LEFT JOIN Shipment s ON i.ID = s.ItemID GROUP BY i.ID HAVING i.ItemCode = ?;";
+			PreparedStatement preparedStatement = con.prepareStatement(itemSummary);
+			preparedStatement.setString(1, itemCode);
+			rs = preparedStatement.executeQuery();
 			if(rs.toString().length() == 0) {
 				System.out.println("That item does not exist.");
 			}
@@ -214,8 +228,11 @@ class dao {
 	//DONE
 	public void UpdateItem(String itemCode, double price) throws SQLException {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		stmt.executeUpdate("UPDATE Item SET Price = '"+price+"' WHERE ItemCode = '"+itemCode+"';");
+		String query = "UPDATE Item SET Price = ? WHERE ItemCode = ?);";
+		PreparedStatement preparedStatement = con.prepareStatement(query);
+		preparedStatement.setDouble(1, price);
+		preparedStatement.setString(2, itemCode);
+		preparedStatement.executeUpdate();
 		closeConn(con);
 	}
 
@@ -236,11 +253,11 @@ class dao {
 		Connection con = getConn();
 		try {
 			String query = "DELETE FROM Shipment s WHERE s.ItemID = "
-					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode + "'" + ") "
+					+ "(SELECT ID from Item WHERE ItemCode = ?) "
 						+ "ORDER BY ShipmentDate DESC LIMIT 1";
-			Statement stmt = con.createStatement();
-			int r = stmt.executeUpdate(query);
-			System.out.println("Executed query: " + query);
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -252,12 +269,12 @@ class dao {
 		Connection con = getConn();
 		try {
 			String query = "DELETE FROM Purchase p WHERE p.ItemID = "
-					+ "(SELECT ID from Item WHERE ItemCode = " + "'" + itemCode + "'" + ") "
+					+ "(SELECT ID from Item WHERE ItemCode = ?) "
 						+ "ORDER BY PurchaseDate DESC LIMIT 1";
 			
-			Statement stmt = con.createStatement();
-			int r = stmt.executeUpdate(query);
-			System.out.println("Executed query: " + query);
+			PreparedStatement preparedStatement = con.prepareStatement(query);
+			preparedStatement.setString(1, itemCode);
+			preparedStatement.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
