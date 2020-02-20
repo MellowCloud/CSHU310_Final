@@ -142,36 +142,49 @@ class dao {
 	}
 
 	// DONE
-	public void GetItems(String itemCode) throws SQLException {
+	public void GetItems(String itemCode) {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		if (itemCode.equals("%")) {
-			rs = stmt.executeQuery("SELECT * FROM Item;");
-		} else {
-			String query = "SELECT * FROM Item WHERE ItemCode = ?;";
-			PreparedStatement preparedStatement = con.prepareStatement(query);
-			preparedStatement.setString(1, itemCode);
-			rs = preparedStatement.executeQuery();
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs;
+			if (itemCode.equals("%")) {
+				rs = stmt.executeQuery("SELECT * FROM Item;");
+			} else {
+				String query = "SELECT * FROM Item WHERE ItemCode = ?;";
+				PreparedStatement preparedStatement = con.prepareStatement(query);
+				preparedStatement.setString(1, itemCode);
+				rs = preparedStatement.executeQuery();
+				PrintItemResults("%", rs);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		PrintItemResults("%", rs);
+		
 		closeConn(con);
 	}
 
 	// DONE
-	public void GetShipments(String itemCode) throws SQLException {
+	public void GetShipments(String itemCode) {
 		Connection con = getConn();
-		Statement stmt = con.createStatement();
-		ResultSet rs;
-		if (itemCode.equals("%")) {
-			rs = stmt.executeQuery("SELECT * FROM Shipment;");
-		} else {
-			String query = "SELECT s.* FROM Shipment s JOIN Item i on s.ItemID = i.ID WHERE i.ItemCode = ?;";
-			PreparedStatement preparedStatement = con.prepareStatement(query);
-			preparedStatement.setString(1, itemCode);
-			rs = preparedStatement.executeQuery();
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			ResultSet rs;
+			if (itemCode.equals("%")) {
+				rs = stmt.executeQuery("SELECT * FROM Shipment;");
+			} else {
+				String query = "SELECT s.* FROM Shipment s JOIN Item i on s.ItemID = i.ID WHERE i.ItemCode = ?;";
+				PreparedStatement preparedStatement = con.prepareStatement(query);
+				preparedStatement.setString(1, itemCode);
+				rs = preparedStatement.executeQuery();
+				PrintShipmentResults("%", rs);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		PrintShipmentResults("%", rs);
 		closeConn(con);
 	}
 
@@ -212,7 +225,7 @@ class dao {
 			PreparedStatement preparedStatement = con.prepareStatement(itemSummary);
 			preparedStatement.setString(1, itemCode);
 			rs = preparedStatement.executeQuery();
-			if(rs.toString().length() == 0) {
+			if(rs.getFetchSize() == 0) {
 				System.out.println("That item does not exist.");
 			}
 			while(rs.next()) {
@@ -281,6 +294,9 @@ class dao {
 	}
 
 	public void PrintPurchaseResults(String columns, ResultSet rs) throws SQLException {
+		if(rs.getFetchSize() == 0) {
+				System.out.println("That item does not exist.");
+			}
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			String itemID = rs.getString("ItemID");
@@ -296,6 +312,9 @@ class dao {
 	}
 
 	public void PrintShipmentResults(String columns, ResultSet rs) throws SQLException {
+		if(rs.getFetchSize() == 0) {
+				System.out.println("That item does not exist.");
+			}
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			int itemID = rs.getInt("ItemID");
@@ -311,6 +330,9 @@ class dao {
 	}
 
 	public void PrintItemResults(String columns, ResultSet rs) throws SQLException {
+		if(rs.getFetchSize() == 0) {
+				System.out.println("That item does not exist.");
+			}
 		while (rs.next()) {
 			int id = rs.getInt("ID");
 			String itemCode = rs.getString("ItemCode");
