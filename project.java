@@ -34,6 +34,14 @@ public class project {
 				printUsage();
 			}
 		}
+		// TEST
+//		 Connection con = getConn();
+//		 Statement stmt = con.createStatement();
+//		 ResultSet result_set = stmt.executeQuery("Select * from Item;");
+//		 System.out.println(result_set.getRow());
+//		
+//		 closeConn(con);
+		// END TEST
 	}
 
 	public static void printUsage() {
@@ -98,7 +106,7 @@ class dao {
 		closeConn(con);
 
 	}
-
+	//DONE
 	public void CreatePurchase(String itemCode, String purchaseQuantity) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
@@ -109,7 +117,7 @@ class dao {
 		}
 		closeConn(con);
 	}
-
+	//DONE
 	public void CreateShipment(String itemCode, String shipmentQuantity, String shipmentDate) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
@@ -202,7 +210,7 @@ class dao {
 		}
 		closeConn(con);
 	}
-
+	//DONE
 	public void UpdateItem(String itemCode, double price) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
