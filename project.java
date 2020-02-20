@@ -240,7 +240,7 @@ class dao {
 	//DONE
 	public void UpdateItem(String itemCode, double price) throws SQLException {
 		Connection con = getConn();
-		String query = "UPDATE Item SET Price = ? WHERE ItemCode = ?);";
+		String query = "UPDATE Item SET Price = ? WHERE ItemCode = ?;";
 		PreparedStatement preparedStatement = con.prepareStatement(query);
 		preparedStatement.setDouble(1, price);
 		preparedStatement.setString(2, itemCode);
