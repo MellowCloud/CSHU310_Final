@@ -130,7 +130,7 @@ class dao {
 	public void CreateShipment(String itemCode, String shipmentQuantity, String shipmentDate) {
 		Connection con = getConn();
 		try{
-			String query = "INSERT INTO Shipment(ItemID, Quantity, ShipmentDate) VALUES ((SELECT ifnull((SELECT ID from Item WHERE itemCode = 5), 9813748)), ?, ?);";
+			String query = "INSERT INTO Shipment(ItemID, Quantity, ShipmentDate) VALUES ((SELECT ifnull((SELECT ID from Item WHERE itemCode = ?), 9813748)), ?, ?);";
 			PreparedStatement preparedStatement = con.prepareStatement(query);
 			preparedStatement.setString(1, itemCode);
 			preparedStatement.setString(2, shipmentQuantity);
