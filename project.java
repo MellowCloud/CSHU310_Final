@@ -146,7 +146,7 @@ class dao {
 	public void GetItems(String itemCode) {
 		Connection con = getConn();
 		Statement stmt;
-		ResultSet rs;
+		ResultSet rs = null;
 		try {
 			stmt = con.createStatement();
 			
@@ -171,7 +171,7 @@ class dao {
 	public void GetShipments(String itemCode) {
 		Connection con = getConn();
 		Statement stmt;
-		ResultSet rs;
+		ResultSet rs = null;
 		try {
 			stmt = con.createStatement();
 			
@@ -196,7 +196,7 @@ class dao {
 	public void GetPurchases(String itemCode) throws SQLException {
 		Connection con = getConn();
 		Statement stmt = con.createStatement();
-		ResultSet rs;
+		ResultSet rs = null;
 		if (itemCode.equals("%")) {
 			rs = stmt.executeQuery("SELECT * FROM Purchase;");
 		} else {
