@@ -1,0 +1,43 @@
+
+java project /?
+
+java project CreateItem LSoda "Large Soda" 5.50
+
+EXPECTS ERROR
+java project CreateItem LSoda "Large Soda" 5.50
+
+java project GetItems % 
+
+java project GetItems LSoda
+
+java project UpdateItem LSoda 6.00
+
+SHOULD SHOW 0 FOR LSoda
+java project ItemsAvailable LSoda
+
+java project CreateShipment LSoda 15 2020-01-01
+
+EXPECTS ERROR
+java project CreateShipment LSoda 15 2020-01-01
+
+SHOULD SHOW 15 FOR LSoda
+java project ItemsAvailable LSoda
+
+java project CreatePurchase LSoda 5
+
+SHOULD SHOW 10 FOR LSoda
+java project ItemsAvailable LSoda
+
+java project GetShipments LSoda
+
+java project GetShipments %
+
+java project GetPurchases LSoda
+
+java project GetPurchases %
+
+java project DeleteShipment LSoda
+
+java project DeletePurchase LSoda
+
+java project DeleteItem LSoda

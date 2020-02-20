@@ -3,6 +3,7 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
+
 public class project {
 
 	public static void main(String[] args) throws SQLException, ClassNotFoundException {
@@ -30,7 +31,7 @@ public class project {
 				db.DeleteShipment(args[1]);
 			} else if (args[0].equals("DeletePurchase") && args.length == 2) {
 				db.DeletePurchase(args[1]);
-			} else {
+			}else {
 				printUsage();
 			}
 		}
