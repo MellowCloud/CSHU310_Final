@@ -163,7 +163,12 @@ class dao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		PrintItemResults("%", rs);
+		try {
+			PrintItemResults("%", rs);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		closeConn(con);
 	}
 
@@ -188,7 +193,12 @@ class dao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		PrintShipmentResults("%", rs);
+		try {
+			PrintShipmentResults("%", rs);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		closeConn(con);
 	}
 
