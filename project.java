@@ -190,7 +190,7 @@ class dao {
 			String itemSummary = "SELECT i.*, sum(p.Quantity) as PurchaseSum, sum(s.Quantity) as ShipmentSum FROM Item i LEFT JOIN Purchase p ON i.ID = p.ItemID LEFT JOIN Shipment s ON i.ID = s.ItemID GROUP BY i.ID HAVING i.ItemCode = " + "'" + itemCode + "'" + ";";
 			stmt = con.createStatement();
 			rs = stmt.executeQuery(itemSummary);
-			if(rs.getFetchSize() == 0) {
+			if(rs.toString().length() == 0) {
 				System.out.println("That item does not exist.");
 			}
 			while(rs.next()) {
