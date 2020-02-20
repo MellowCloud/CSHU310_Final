@@ -146,9 +146,10 @@ class dao {
 	public void GetItems(String itemCode) {
 		Connection con = getConn();
 		Statement stmt;
+		ResultSet rs;
 		try {
 			stmt = con.createStatement();
-			ResultSet rs;
+			
 			if (itemCode.equals("%")) {
 				rs = stmt.executeQuery("SELECT * FROM Item;");
 			} else {
@@ -156,13 +157,13 @@ class dao {
 				PreparedStatement preparedStatement = con.prepareStatement(query);
 				preparedStatement.setString(1, itemCode);
 				rs = preparedStatement.executeQuery();
-				PrintItemResults("%", rs);
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		PrintItemResults("%", rs);
 		closeConn(con);
 	}
 
@@ -170,9 +171,10 @@ class dao {
 	public void GetShipments(String itemCode) {
 		Connection con = getConn();
 		Statement stmt;
+		ResultSet rs;
 		try {
 			stmt = con.createStatement();
-			ResultSet rs;
+			
 			if (itemCode.equals("%")) {
 				rs = stmt.executeQuery("SELECT * FROM Shipment;");
 			} else {
@@ -186,6 +188,7 @@ class dao {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		PrintShipmentResults("%", rs);
 		closeConn(con);
 	}
 
